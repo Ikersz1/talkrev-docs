@@ -103,7 +103,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar documentos..."
+            placeholder="Search documents..."
             className="flex-1 h-14 bg-transparent text-lg text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
             autoFocus
           />
@@ -144,7 +144,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         {result.title}
                       </p>
                       <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                        {result.folder || "Raíz"}
+                        {result.folder || "Root"}
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 line-clamp-2">
                         {result.excerpt}
@@ -156,13 +156,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </ul>
           ) : query && !isLoading ? (
             <div className="py-12 text-center text-slate-500 dark:text-slate-400">
-              <p>No se encontraron resultados</p>
-              <p className="text-sm mt-1">Intenta con otros términos de búsqueda</p>
+              <p>No results found</p>
+              <p className="text-sm mt-1">Try different search terms</p>
             </div>
           ) : !query ? (
             <div className="py-12 text-center text-slate-500 dark:text-slate-400">
-              <p>Escribe para buscar documentos</p>
-              <p className="text-sm mt-1">Usa ↑↓ para navegar y Enter para seleccionar</p>
+              <p>Type to search documents</p>
+              <p className="text-sm mt-1">Use ↑↓ to navigate and Enter to select</p>
             </div>
           ) : null}
         </div>
@@ -172,16 +172,16 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">↵</kbd>
-              seleccionar
+              select
             </span>
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">↑↓</kbd>
-              navegar
+              navigate
             </span>
           </div>
           <span className="flex items-center gap-1">
             <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">esc</kbd>
-            cerrar
+            close
           </span>
         </div>
       </div>

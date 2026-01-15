@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     if (!message) {
       return NextResponse.json(
-        { error: "Mensaje requerido" },
+        { error: "Message required" },
         { status: 400 }
       );
     }
@@ -106,17 +106,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Build messages for OpenRouter
-    const systemPrompt = `Eres un asistente experto en documentación técnica. Tu trabajo es responder preguntas basándote ÚNICAMENTE en la documentación proporcionada a continuación.
+    const systemPrompt = `You are an expert technical documentation assistant. Your job is to answer questions based ONLY on the documentation provided below.
 
-REGLAS:
-1. Responde siempre en español
-2. Sé conciso y directo
-3. Si la información no está en la documentación, dilo claramente
-4. Usa formato Markdown para estructurar tus respuestas
-5. Cita secciones relevantes cuando sea apropiado
+RULES:
+1. Always respond in English
+2. Be concise and direct
+3. If the information is not in the documentation, say so clearly
+4. Use Markdown format to structure your responses
+5. Cite relevant sections when appropriate
 
-DOCUMENTACIÓN:
-${documentContent || "No hay documentación disponible para esta consulta."}`;
+DOCUMENTATION:
+${documentContent || "No documentation available for this query."}`;
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -129,7 +129,7 @@ ${documentContent || "No hay documentación disponible para esta consulta."}`;
 
     if (!openRouterApiKey) {
       return NextResponse.json(
-        { error: "OpenRouter API key no configurada" },
+        { error: "OpenRouter API key not configured" },
         { status: 500 }
       );
     }
@@ -154,13 +154,13 @@ ${documentContent || "No hay documentación disponible para esta consulta."}`;
       const errorData = await response.json();
       console.error("OpenRouter error:", errorData);
       return NextResponse.json(
-        { error: "Error al procesar la solicitud" },
+        { error: "Error processing request" },
         { status: 500 }
       );
     }
 
     const data = await response.json();
-    const assistantMessage = data.choices?.[0]?.message?.content || "No pude generar una respuesta.";
+    const assistantMessage = data.choices?.[0]?.message?.content || "I couldn't generate a response.";
 
     return NextResponse.json({
       response: assistantMessage,
@@ -168,7 +168,7 @@ ${documentContent || "No hay documentación disponible para esta consulta."}`;
   } catch (error) {
     console.error("Chat error:", error);
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+        { error: "Internal server error" },
       { status: 500 }
     );
   }

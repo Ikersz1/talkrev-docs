@@ -102,7 +102,7 @@ export function MarkdownEditor({ initialContent, docPath, title }: MarkdownEdito
                 {title}
               </h1>
               <p className="text-sm text-slate-500">
-                {hasChanges ? "Cambios sin guardar" : "Editando documento"}
+                {hasChanges ? "Unsaved changes" : "Editing document"}
               </p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function MarkdownEditor({ initialContent, docPath, title }: MarkdownEdito
                 )}
               >
                 <Edit3 className="h-4 w-4 inline mr-1.5" />
-                Editar
+                Edit
               </button>
               <button
                 onClick={() => setIsPreview(true)}
@@ -159,7 +159,7 @@ export function MarkdownEditor({ initialContent, docPath, title }: MarkdownEdito
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              Guardar
+              Save
             </Button>
           </div>
         </div>
@@ -176,7 +176,7 @@ export function MarkdownEditor({ initialContent, docPath, title }: MarkdownEdito
             ref={textareaRef}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Escribe tu contenido en Markdown..."
+              placeholder="Write your content in Markdown..."
             className="w-full min-h-[500px] p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             spellCheck={false}
           />
@@ -185,7 +185,7 @@ export function MarkdownEditor({ initialContent, docPath, title }: MarkdownEdito
 
       {/* Keyboard shortcuts hint */}
       <div className="fixed bottom-4 right-4 text-xs text-slate-400 space-x-4">
-        <span>⌘S guardar</span>
+        <span>⌘S save</span>
         <span>⌘P preview</span>
       </div>
     </div>

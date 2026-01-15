@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TalkRev Docs - Documentación Interna",
-  description: "Plataforma de documentación interna del equipo TalkRev",
+  title: "TalkRev Docs - Internal Documentation",
+  description: "Internal documentation platform for the TalkRev team",
 };
 
 export default function RootLayout({

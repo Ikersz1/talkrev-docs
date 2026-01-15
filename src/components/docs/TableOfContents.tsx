@@ -37,7 +37,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
   return (
     <nav className="space-y-1">
       <p className="font-semibold text-sm text-slate-900 dark:text-white mb-3">
-        En esta página
+        On this page
       </p>
       <ul className="space-y-2 text-sm">
         {headings.map(({ id, text, level }) => (

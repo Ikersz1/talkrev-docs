@@ -16,14 +16,14 @@ export default async function DocsIndexPage() {
             <BookOpen className="h-8 w-8 text-violet-600 dark:text-violet-400" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
-            ¡Bienvenido a la Documentación!
+            Welcome to the Documentation!
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Aún no hay documentos. Crea tu primer documento usando el botón en la barra lateral.
+            No documents yet. Create your first document using the button in the sidebar.
           </p>
           <div className="inline-flex items-center gap-2 text-sm text-slate-500">
             <Plus className="h-4 w-4" />
-            <span>Usa "Nuevo Doc" para empezar</span>
+            <span>Use "New Doc" to get started</span>
           </div>
         </div>
       </div>
@@ -34,10 +34,10 @@ export default async function DocsIndexPage() {
     <div className="max-w-4xl mx-auto p-8 lg:p-12">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
-          Documentación
+          Documentation
         </h1>
         <p className="text-lg text-slate-600 dark:text-slate-400">
-          Explora la documentación por categorías o usa la búsqueda para encontrar lo que necesitas.
+          Explore the documentation by categories or use search to find what you need.
         </p>
       </div>
 

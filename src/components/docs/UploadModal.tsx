@@ -166,7 +166,7 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
           </div>
           <div>
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-              Subir Archivos
+              Upload Files
             </h2>
             <p className="text-sm text-slate-500">
               .md, .pdf, imágenes, y más
@@ -177,14 +177,14 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
         {/* Folder selector */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-            Carpeta destino
+            Destination folder
           </label>
           <select
             value={folder}
             onChange={(e) => setFolder(e.target.value)}
             className="w-full h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
           >
-            <option value="">Raíz</option>
+              <option value="">Root</option>
             {folders.map((f) => (
               <option key={f} value={f}>
                 {f}
@@ -218,10 +218,10 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
 
           <Upload className="h-10 w-10 mx-auto mb-3 text-slate-400" />
           <p className="text-slate-600 dark:text-slate-400 mb-1">
-            Arrastra archivos aquí o haz click
+            Drag files here or click
           </p>
           <p className="text-sm text-slate-500">
-            Cualquier tipo de archivo
+            Any file type
           </p>
         </div>
 
@@ -280,7 +280,7 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
             onClick={handleClose}
             className="flex-1"
           >
-            {allDone ? "Cerrar" : "Cancelar"}
+            {allDone ? "Close" : "Cancel"}
           </Button>
           {!allDone && (
             <Button
@@ -291,19 +291,19 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
               {isUploading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Subiendo...
+                  Uploading...
                 </>
               ) : (
                 <>
                   <Upload className="h-4 w-4" />
-                  Subir {pendingFiles.length > 0 ? `(${pendingFiles.length})` : ""}
+                  Upload {pendingFiles.length > 0 ? `(${pendingFiles.length})` : ""}
                 </>
               )}
             </Button>
           )}
           {allDone && hasSuccess && (
             <Button onClick={handleClose} className="flex-1">
-              ¡Listo!
+                  Done!
             </Button>
           )}
         </div>

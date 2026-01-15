@@ -22,7 +22,7 @@ export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModal
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError("El nombre es requerido");
+      setError("Name is required");
       return;
     }
 
@@ -50,7 +50,7 @@ export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModal
       setName("");
       setParentId("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
@@ -78,14 +78,14 @@ export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModal
             <FolderPlus className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Nueva Carpeta
+            New Folder
           </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Nombre
+              Name
             </label>
             <Input
               value={name}
@@ -98,14 +98,14 @@ export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModal
           {folders.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Dentro de (opcional)
+                Inside (optional)
               </label>
               <select
                 value={parentId}
                 onChange={(e) => setParentId(e.target.value)}
                 className="w-full h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               >
-                <option value="">Raíz</option>
+                <option value="">Root</option>
                 {folders.map((f) => (
                   <option key={f.id} value={f.id}>
                     {f.name}
@@ -126,13 +126,13 @@ export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModal
               onClick={onClose}
               className="flex-1"
             >
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" disabled={isLoading} className="flex-1">
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Crear"
+                "Create"
               )}
             </Button>
           </div>

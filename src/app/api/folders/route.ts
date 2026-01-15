@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       return NextResponse.json(
-        { error: "El nombre es requerido" },
+        { error: "Name is required" },
         { status: 400 }
       );
     }
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "Ya existe una carpeta con ese nombre" },
+        { error: "A folder with that name already exists" },
         { status: 400 }
       );
     }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error("Error creating folder:", error);
       return NextResponse.json(
-        { error: "Error al crear carpeta" },
+        { error: "Error creating folder" },
         { status: 500 }
       );
     }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creating folder:", error);
     return NextResponse.json(
-      { error: "Error al crear carpeta" },
+      { error: "Error creating folder" },
       { status: 500 }
     );
   }

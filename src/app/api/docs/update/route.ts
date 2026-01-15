@@ -8,7 +8,7 @@ export async function PUT(request: NextRequest) {
 
     if (!path) {
       return NextResponse.json(
-        { error: "Path es requerido" },
+        { error: "Path is required" },
         { status: 400 }
       );
     }
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
 
     if (findError || !doc) {
       return NextResponse.json(
-        { error: "Documento no encontrado" },
+        { error: "Document not found" },
         { status: 404 }
       );
     }
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
     if (updateError) {
       console.error("Update error:", updateError);
       return NextResponse.json(
-        { error: "Error al actualizar documento" },
+        { error: "Error updating document" },
         { status: 500 }
       );
     }
@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update error:", error);
     return NextResponse.json(
-      { error: "Error al procesar solicitud" },
+      { error: "Error processing request" },
       { status: 500 }
     );
   }

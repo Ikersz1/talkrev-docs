@@ -65,7 +65,7 @@ export default async function DocPage({ params }: DocPageProps) {
           className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a la documentación
+          Back to documentation
         </Link>
 
         {/* Title for non-markdown files */}
@@ -88,7 +88,7 @@ export default async function DocPage({ params }: DocPageProps) {
             />
           ) : (
             <div className="py-12 text-center text-slate-500">
-              <p>Este documento no tiene contenido</p>
+              <p>This document has no content</p>
             </div>
           )}
         </article>
@@ -104,7 +104,7 @@ export default async function DocPage({ params }: DocPageProps) {
             )}
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>Actualizado {formatDate(doc.updatedAt)}</span>
+              <span>Updated {formatDate(doc.updatedAt)}</span>
             </div>
             {doc.fileUrl && (
               <a
@@ -113,7 +113,7 @@ export default async function DocPage({ params }: DocPageProps) {
                 className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline"
               >
                 <Download className="h-4 w-4" />
-                Descargar archivo
+                Download file
               </a>
             )}
             {isMarkdown && hasContent && (
@@ -122,7 +122,7 @@ export default async function DocPage({ params }: DocPageProps) {
                 className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline ml-auto"
               >
                 <Edit3 className="h-4 w-4" />
-                Editar página
+                Edit page
               </Link>
             )}
           </div>

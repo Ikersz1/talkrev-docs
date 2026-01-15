@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json(
-        { error: "Archivo requerido" },
+        { error: "File required" },
         { status: 400 }
       );
     }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     if (uploadError) {
       console.error("Storage upload error:", uploadError);
       return NextResponse.json(
-        { error: "Error al subir archivo" },
+        { error: "Error uploading file" },
         { status: 500 }
       );
     }
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error("Error updating document:", error);
         return NextResponse.json(
-          { error: "Error al actualizar documento" },
+          { error: "Error updating document" },
           { status: 500 }
         );
       }
@@ -157,13 +157,13 @@ export async function POST(request: NextRequest) {
       
       if (error.code === "23505") {
         return NextResponse.json(
-          { error: "Ya existe un documento con ese nombre" },
+          { error: "A document with that name already exists" },
           { status: 400 }
         );
       }
 
       return NextResponse.json(
-        { error: "Error al crear documento" },
+        { error: "Error creating document" },
         { status: 500 }
       );
     }
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Error al procesar archivo" },
+      { error: "Error processing file" },
       { status: 500 }
     );
   }

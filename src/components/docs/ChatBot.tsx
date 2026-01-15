@@ -60,7 +60,7 @@ export function ChatBot({ documents }: ChatBotProps) {
       });
 
       if (!res.ok) {
-        throw new Error("Error en la respuesta");
+        throw new Error("Response error");
       }
 
       const data = await res.json();
@@ -69,7 +69,7 @@ export function ChatBot({ documents }: ChatBotProps) {
       console.error("Chat error:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Lo siento, hubo un error. Por favor intenta de nuevo." },
+        { role: "assistant", content: "Sorry, there was an error. Please try again." },
       ]);
     } finally {
       setIsLoading(false);
@@ -77,7 +77,7 @@ export function ChatBot({ documents }: ChatBotProps) {
   };
 
   const getContextLabel = () => {
-    if (selectedContext === "all") return "Toda la documentación";
+    if (selectedContext === "all") return "All documentation";
     const doc = documents.find((d) => d.path === selectedContext);
     return doc?.title || selectedContext;
   };
@@ -109,8 +109,8 @@ export function ChatBot({ documents }: ChatBotProps) {
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-white text-sm">Asistente IA</h3>
-                <p className="text-xs text-white/70">Pregunta sobre la documentación</p>
+                <h3 className="font-semibold text-white text-sm">AI Assistant</h3>
+                <p className="text-xs text-white/70">Ask about the documentation</p>
               </div>
             </div>
             <button
@@ -148,7 +148,7 @@ export function ChatBot({ documents }: ChatBotProps) {
                     )}
                   >
                     <Sparkles className="h-4 w-4" />
-                    Toda la documentación
+                    All documentation
                   </button>
                   {documents.map((doc) => (
                     <button
@@ -183,10 +183,10 @@ export function ChatBot({ documents }: ChatBotProps) {
                   <Sparkles className="h-8 w-8 text-violet-600 dark:text-violet-400" />
                 </div>
                 <h4 className="font-semibold text-slate-900 dark:text-white mb-2">
-                  ¡Hola! Soy tu asistente
+                  Hello! I'm your assistant
                 </h4>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Pregúntame sobre cualquier cosa de la documentación. Puedo ayudarte a encontrar información, explicar conceptos o resolver dudas.
+                  Ask me anything about the documentation. I can help you find information, explain concepts, or answer questions.
                 </p>
               </div>
             )}
@@ -223,7 +223,7 @@ export function ChatBot({ documents }: ChatBotProps) {
                 <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl rounded-bl-md px-4 py-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
-                    <span className="text-sm text-slate-500">Pensando...</span>
+                    <span className="text-sm text-slate-500">Thinking...</span>
                   </div>
                 </div>
               </div>
@@ -240,7 +240,7 @@ export function ChatBot({ documents }: ChatBotProps) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Escribe tu pregunta..."
+                placeholder="Type your question..."
                 disabled={isLoading}
                 className="flex-1 h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent text-sm disabled:opacity-50"
               />
@@ -258,7 +258,7 @@ export function ChatBot({ documents }: ChatBotProps) {
                 onClick={clearChat}
                 className="w-full mt-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               >
-                Limpiar conversación
+                Clear conversation
               </button>
             )}
           </div>

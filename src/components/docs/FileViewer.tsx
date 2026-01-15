@@ -48,7 +48,7 @@ export function FileViewer({ fileUrl, fileType, fileSize, title }: FileViewerPro
           <a href={fileUrl} download target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
-              Descargar
+              Download
             </Button>
           </a>
         </div>
@@ -83,13 +83,13 @@ export function FileViewer({ fileUrl, fileType, fileSize, title }: FileViewerPro
             <a href={fileUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" className="gap-2">
                 <ExternalLink className="h-4 w-4" />
-                Abrir
+                Open
               </Button>
             </a>
             <a href={fileUrl} download>
               <Button variant="outline" size="sm" className="gap-2">
                 <Download className="h-4 w-4" />
-                Descargar
+                Download
               </Button>
             </a>
           </div>
@@ -124,7 +124,7 @@ export function FileViewer({ fileUrl, fileType, fileSize, title }: FileViewerPro
           <a href={fileUrl} download>
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
-              Descargar
+              Download
             </Button>
           </a>
         </div>
@@ -158,7 +158,7 @@ export function FileViewer({ fileUrl, fileType, fileSize, title }: FileViewerPro
           <a href={fileUrl} download>
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
-              Descargar
+              Download
             </Button>
           </a>
         </div>

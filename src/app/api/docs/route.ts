@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     if (!title) {
       return NextResponse.json(
-        { error: "El título es requerido" },
+        { error: "Title is required" },
         { status: 400 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        { error: "Error al crear documento" },
+        { error: "Error creating document" },
         { status: 500 }
       );
     }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creating doc:", error);
     return NextResponse.json(
-      { error: "Error al crear documento" },
+        { error: "Error creating document" },
       { status: 500 }
     );
   }
@@ -60,7 +60,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!path) {
       return NextResponse.json(
-        { error: "La ruta es requerida" },
+        { error: "Path is required" },
         { status: 400 }
       );
     }
@@ -69,7 +69,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!success) {
       return NextResponse.json(
-        { error: "Documento no encontrado" },
+        { error: "Document not found" },
         { status: 404 }
       );
     }
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error("Error deleting doc:", error);
     return NextResponse.json(
-      { error: "Error al eliminar documento" },
+        { error: "Error deleting document" },
       { status: 500 }
     );
   }

@@ -22,7 +22,7 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("El título es requerido");
+      setError("Title is required");
       return;
     }
 
@@ -53,7 +53,7 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
       setTitle("");
       setFolder("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
@@ -81,33 +81,33 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
             <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Nuevo Documento
+            New Document
           </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Título
+              Title
             </label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej: Guía de instalación"
+              placeholder="E.g: Installation guide"
               autoFocus
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Carpeta (opcional)
+              Folder (optional)
             </label>
             <select
               value={folder}
               onChange={(e) => setFolder(e.target.value)}
               className="w-full h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             >
-              <option value="">Raíz</option>
+              <option value="">Root</option>
               {folders.map((f) => (
                 <option key={f} value={f}>
                   {f}
@@ -127,13 +127,13 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
               onClick={onClose}
               className="flex-1"
             >
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" disabled={isLoading} className="flex-1">
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Crear"
+                "Create"
               )}
             </Button>
           </div>

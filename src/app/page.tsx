@@ -27,25 +27,25 @@ export default async function HomePage() {
             href="/docs"
             className="px-4 py-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium text-sm hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
           >
-            Ver Documentación
+            View Documentation
           </Link>
         </nav>
 
         <div className="relative max-w-4xl mx-auto px-6 py-24 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-medium mb-6">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            {totalDocs} documentos disponibles
+            {totalDocs} documents available
           </div>
           
           <h1 className="text-5xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
-            Documentación
+            Documentation
             <span className="block mt-2 bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-              del equipo TalkRev
+              for the TalkRev team
             </span>
           </h1>
           
           <p className="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
-            Todo lo que necesitas saber sobre nuestros proyectos, APIs, guías y procedimientos. Centralizado y siempre actualizado.
+            Everything you need to know about our projects, APIs, guides, and procedures. Centralized and always up to date.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -54,14 +54,14 @@ export default async function HomePage() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-medium shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/30 hover:-translate-y-0.5 transition-all"
             >
               <BookOpen className="h-5 w-5" />
-              Explorar Docs
+              Explore Docs
             </Link>
             <Link
               href="/docs"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium border border-slate-200 dark:border-slate-700 hover:border-violet-300 dark:hover:border-violet-700 hover:-translate-y-0.5 transition-all"
             >
               <Search className="h-5 w-5" />
-              Buscar (⌘K)
+              Search (⌘K)
             </Link>
           </div>
         </div>
@@ -72,20 +72,20 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureCard
             icon={FolderTree}
-            title="Organización por Carpetas"
-            description="Estructura tus documentos en carpetas para mantener todo ordenado y fácil de encontrar."
+            title="Folder Organization"
+            description="Structure your documents in folders to keep everything organized and easy to find."
             color="amber"
           />
           <FeatureCard
             icon={Upload}
             title="Markdown Nativo"
-            description="Escribe documentos en Markdown con soporte para código, tablas, imágenes y más."
+            description="Write documents in Markdown with support for code, tables, images, and more."
             color="violet"
           />
           <FeatureCard
             icon={Zap}
             title="Búsqueda Instantánea"
-            description="Encuentra cualquier documento en segundos con nuestra búsqueda en tiempo real."
+            description="Find any document in seconds with our real-time search."
             color="emerald"
           />
         </div>
@@ -121,7 +121,7 @@ export default async function HomePage() {
                       {node.name}
                     </p>
                     <p className="text-sm text-slate-500">
-                      {node.type === "folder" ? "Carpeta" : "Documento"}
+                      {node.type === "folder" ? "Folder" : "Document"}
                     </p>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-sm text-slate-500">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            <span>Para uso interno del equipo</span>
+            <span>For internal team use</span>
           </div>
           <span>TalkRev © {new Date().getFullYear()}</span>
         </div>
