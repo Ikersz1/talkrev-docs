@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
 
+// Sanitize filename for Supabase Storage
+function sanitizeFileName(name: string): string {
+  // Get extension
+  const ext = name.split(".").pop() || "";
+  const baseName = name.replace(`.${ext}`, "");
+  
+  // Remove or replace invalid characters
+  const sanitized = baseName
+    .replace(/[[\]{}()<>]/g, "") // Remove brackets
+    .replace(/[^a-zA-Z0-9._-\s]/g, "") // Keep only safe chars
+    .replace(/\s+/g, "_") // Replace spaces with underscore
+    .replace(/_+/g, "_") // Remove duplicate underscores
+    .trim();
+  
+  return `${sanitized}.${ext}`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -17,13 +34,14 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createServerSupabaseClient();
-    const fileName = file.name;
+    const originalFileName = file.name;
+    const fileName = sanitizeFileName(originalFileName);
     const fileType = file.type || "application/octet-stream";
     const fileSize = file.size;
-    const isMarkdown = fileName.endsWith(".md");
+    const isMarkdown = originalFileName.endsWith(".md");
 
     // Generate slug from title or filename
-    const docTitle = title || fileName.replace(/\.[^/.]+$/, "").replace(/-/g, " ");
+    const docTitle = title || originalFileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
     const slug = slugify(docTitle);
 
     // Get folder ID if folder is specified
