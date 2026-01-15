@@ -118,7 +118,7 @@ export default async function DocPage({ params }: DocPageProps) {
             )}
             {isMarkdown && hasContent && (
               <Link
-                href={`/docs/${docPath}/edit`}
+                href={`/docs/edit/${docPath}`}
                 className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline ml-auto"
               >
                 <Edit3 className="h-4 w-4" />
