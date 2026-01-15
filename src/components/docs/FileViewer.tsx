@@ -62,8 +62,8 @@ export function FileViewer({ fileUrl, fileType, fileSize, title }: FileViewerPro
       <div className="space-y-4">
         <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900">
           <iframe
-            src={`${fileUrl}#toolbar=0`}
-            className="w-full h-[70vh]"
+            src={`${fileUrl}#toolbar=1&navpanes=0`}
+            className="w-full h-[90vh] min-h-[800px]"
             title={title}
           />
         </div>
