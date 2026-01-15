@@ -36,7 +36,7 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
         body: JSON.stringify({
           title: title.trim(),
           folder: folder.trim(),
-          content: `# ${title.trim()}\n\nEmpieza a escribir aquí...`,
+          content: `# ${title.trim()}\n\n`,
         }),
       });
 
@@ -46,7 +46,8 @@ export function NewDocModal({ isOpen, onClose, folders }: NewDocModalProps) {
         throw new Error(data.error || "Error al crear documento");
       }
 
-      router.push(`/docs/${data.path}`);
+      // Redirect to edit page so user can start writing
+      router.push(`/docs/edit/${data.path}`);
       router.refresh();
       onClose();
       setTitle("");
