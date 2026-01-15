@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/docs/Sidebar";
 import { SearchModal } from "@/components/docs/SearchModal";
 import { NewDocModal } from "@/components/docs/NewDocModal";
 import { NewFolderModal } from "@/components/docs/NewFolderModal";
+import { UploadModal } from "@/components/docs/UploadModal";
 import { TreeNode } from "@/types";
 
 interface DocsLayoutClientProps {
@@ -16,6 +17,7 @@ export function DocsLayoutClient({ tree, children }: DocsLayoutClientProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNewDocOpen, setIsNewDocOpen] = useState(false);
   const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   // Get folder names for the new doc modal
   const folders = tree
@@ -42,6 +44,7 @@ export function DocsLayoutClient({ tree, children }: DocsLayoutClientProps) {
         onSearch={() => setIsSearchOpen(true)}
         onNewDoc={() => setIsNewDocOpen(true)}
         onNewFolder={() => setIsNewFolderOpen(true)}
+        onUpload={() => setIsUploadOpen(true)}
       />
 
       <main className="flex-1 lg:ml-0">{children}</main>
@@ -55,6 +58,11 @@ export function DocsLayoutClient({ tree, children }: DocsLayoutClientProps) {
       <NewFolderModal
         isOpen={isNewFolderOpen}
         onClose={() => setIsNewFolderOpen(false)}
+      />
+      <UploadModal
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        folders={folders}
       />
     </div>
   );

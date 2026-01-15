@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Plus, FolderPlus, Menu, X, BookOpen } from "lucide-react";
+import { Search, Plus, FolderPlus, Menu, X, BookOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TreeView } from "./TreeView";
 import { TreeNode } from "@/types";
@@ -13,9 +13,10 @@ interface SidebarProps {
   onSearch: () => void;
   onNewDoc?: () => void;
   onNewFolder?: () => void;
+  onUpload?: () => void;
 }
 
-export function Sidebar({ tree, onSearch, onNewDoc, onNewFolder }: SidebarProps) {
+export function Sidebar({ tree, onSearch, onNewDoc, onNewFolder, onUpload }: SidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
@@ -76,23 +77,34 @@ export function Sidebar({ tree, onSearch, onNewDoc, onNewFolder }: SidebarProps)
         </div>
 
         {/* Actions */}
-        <div className="px-4 pb-4 flex gap-2">
+        <div className="px-4 pb-4 space-y-2">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onNewDoc}
+              className="flex-1 gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Nuevo Doc
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onNewFolder}
+              className="gap-2"
+            >
+              <FolderPlus className="h-4 w-4" />
+            </Button>
+          </div>
           <Button
             variant="outline"
             size="sm"
-            onClick={onNewDoc}
-            className="flex-1 gap-2"
+            onClick={onUpload}
+            className="w-full gap-2"
           >
-            <Plus className="h-4 w-4" />
-            Nuevo Doc
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onNewFolder}
-            className="gap-2"
-          >
-            <FolderPlus className="h-4 w-4" />
+            <Upload className="h-4 w-4" />
+            Subir .md
           </Button>
         </div>
 
