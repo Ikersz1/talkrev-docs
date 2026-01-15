@@ -341,55 +341,71 @@ export async function getFoldersFromDB(): Promise<Folder[]> {
 export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
   const supabase = await createServerSupabaseClient();
 
-  // Try using the search function first
-  const { data: results, error } = await supabase.rpc("search_documents", {
-    search_query: query,
-  });
-
-  if (error) {
-    // Fallback to simple search
-    const { data: docs } = await supabase
-      .from("documents")
-      .select(`
-        id,
-        title,
-        slug,
-        content,
-        folder_id,
-        folders!left(slug)
-      `)
-      .eq("is_published", true)
-      .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
-      .limit(20);
-
-    if (!docs) return [];
-
-    return docs.map((doc) => {
-      const folder = (doc as Document & { folders?: { slug: string } | null }).folders;
-      const content = doc.content || "";
-      const index = content.toLowerCase().indexOf(query.toLowerCase());
-      const excerpt =
-        index >= 0
-          ? content.slice(Math.max(0, index - 50), index + 150)
-          : content.slice(0, 150);
-
-      return {
-        id: doc.id,
-        title: doc.title,
-        slug: doc.slug,
-        folder: folder?.slug || "",
-        excerpt: excerpt + "...",
-        matchScore: doc.title.toLowerCase().includes(query.toLowerCase()) ? 10 : 5,
-      };
-    });
+  if (!query || query.trim().length === 0) {
+    return [];
   }
 
-  return (results || []).map((r) => ({
-    id: r.id,
-    title: r.title,
-    slug: r.slug,
-    folder: r.folder_slug || "",
-    excerpt: r.excerpt + "...",
-    matchScore: r.rank * 10,
-  }));
+  const searchTerm = `%${query.trim()}%`;
+
+  // Search in documents
+  const { data: docs, error } = await supabase
+    .from("documents")
+    .select(`
+      id,
+      title,
+      slug,
+      content,
+      folder_id,
+      folders!left(slug)
+    `)
+    .eq("is_published", true)
+    .or(`title.ilike.${searchTerm},content.ilike.${searchTerm}`)
+    .limit(20);
+
+  if (error) {
+    console.error("Search error:", error);
+    return [];
+  }
+
+  if (!docs || docs.length === 0) {
+    return [];
+  }
+
+  return docs.map((doc) => {
+    const folder = (doc as Document & { folders?: { slug: string } | null }).folders;
+    const content = doc.content || "";
+    const queryLower = query.toLowerCase();
+    const titleLower = doc.title.toLowerCase();
+    const contentLower = content.toLowerCase();
+    
+    // Find best match position
+    const titleMatch = titleLower.includes(queryLower);
+    const contentMatchIndex = contentLower.indexOf(queryLower);
+    
+    // Calculate match score
+    let matchScore = 0;
+    if (titleMatch) matchScore += 10;
+    if (contentMatchIndex >= 0) matchScore += 5;
+    
+    // Generate excerpt
+    let excerpt = "";
+    if (contentMatchIndex >= 0) {
+      const start = Math.max(0, contentMatchIndex - 50);
+      const end = Math.min(content.length, contentMatchIndex + query.length + 100);
+      excerpt = (start > 0 ? "..." : "") + content.slice(start, end) + (end < content.length ? "..." : "");
+    } else if (titleMatch) {
+      excerpt = content.slice(0, 150) + (content.length > 150 ? "..." : "");
+    } else {
+      excerpt = content.slice(0, 150) + (content.length > 150 ? "..." : "");
+    }
+
+    return {
+      id: doc.id,
+      title: doc.title,
+      slug: doc.slug,
+      folder: folder?.slug || "",
+      excerpt,
+      matchScore,
+    };
+  }).sort((a, b) => b.matchScore - a.matchScore);
 }
