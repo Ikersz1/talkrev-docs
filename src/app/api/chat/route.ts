@@ -143,7 +143,7 @@ ${documentContent || "No hay documentación disponible para esta consulta."}`;
         "X-Title": "TalkRev Docs",
       },
       body: JSON.stringify({
-        model: "anthropic/claude-3.5-sonnet", // You can change this to any model
+        model: "google/gemini-3-flash-preview",
         messages,
         max_tokens: 1024,
         temperature: 0.7,
