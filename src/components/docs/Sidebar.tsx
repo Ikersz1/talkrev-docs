@@ -104,7 +104,7 @@ export function Sidebar({ tree, onSearch, onNewDoc, onNewFolder, onUpload }: Sid
             className="w-full gap-2"
           >
             <Upload className="h-4 w-4" />
-            Subir .md
+            Subir archivos
           </Button>
         </div>
 
