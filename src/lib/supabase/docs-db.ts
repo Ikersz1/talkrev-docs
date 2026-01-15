@@ -345,9 +345,10 @@ export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
     return [];
   }
 
-  const searchTerm = `%${query.trim()}%`;
+  const searchTerm = query.trim().toLowerCase();
 
-  // Search in documents
+  // Search in documents - get all published docs first, then filter in JS
+  // This is more reliable than complex Supabase queries
   const { data: docs, error } = await supabase
     .from("documents")
     .select(`
@@ -359,8 +360,7 @@ export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
       folders!left(slug)
     `)
     .eq("is_published", true)
-    .or(`title.ilike."${searchTerm}",content.ilike."${searchTerm}"`)
-    .limit(20);
+    .limit(100); // Get more docs to filter
 
   if (error) {
     console.error("Search error:", error);
@@ -371,7 +371,25 @@ export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
     return [];
   }
 
-  return docs.map((doc) => {
+  // Filter and rank results
+  const filtered = docs
+    .filter((doc) => {
+      const titleMatch = doc.title.toLowerCase().includes(searchTerm);
+      const contentMatch = (doc.content || "").toLowerCase().includes(searchTerm);
+      return titleMatch || contentMatch;
+    })
+    .slice(0, 20);
+
+  if (error) {
+    console.error("Search error:", error);
+    return [];
+  }
+
+  if (!docs || docs.length === 0) {
+    return [];
+  }
+
+  return filtered.map((doc) => {
     const folder = (doc as Document & { folders?: { slug: string } | null }).folders;
     const content = doc.content || "";
     const queryLower = query.toLowerCase();
