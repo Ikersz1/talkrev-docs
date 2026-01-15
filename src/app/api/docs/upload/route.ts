@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
-import pdf from "pdf-parse";
+import * as pdfParse from "pdf-parse";
 
 // Sanitize filename for Supabase Storage
 function sanitizeFileName(name: string): string {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       try {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        const pdfData = await pdf(buffer);
+        const pdfData = await pdfParse.default(buffer);
         content = pdfData.text;
         
         // If no title provided, try to extract from first line or use filename
