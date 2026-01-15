@@ -345,7 +345,7 @@ export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
     return [];
   }
 
-  const searchTerm = query.trim();
+  const searchTerm = `%${query.trim()}%`;
 
   // Search in documents
   const { data: docs, error } = await supabase
@@ -359,7 +359,7 @@ export async function searchDocsInDB(query: string): Promise<SearchResult[]> {
       folders!left(slug)
     `)
     .eq("is_published", true)
-    .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`)
+    .or(`title.ilike."${searchTerm}",content.ilike."${searchTerm}"`)
     .limit(20);
 
   if (error) {
