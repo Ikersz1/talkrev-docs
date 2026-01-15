@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Search, FolderTree, Upload, Zap, Users } from "lucide-react";
+import { BookOpen, Search, FolderTree, Users } from "lucide-react";
 import { getDocsTreeFromDB } from "@/lib/supabase/docs-db";
 
 export const dynamic = "force-dynamic";
@@ -67,29 +67,45 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Features */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
-          <FeatureCard
-            icon={FolderTree}
-            title="Folder Organization"
-            description="Structure your documents in folders to keep everything organized and easy to find."
-            color="amber"
-          />
-          <FeatureCard
-            icon={Upload}
-            title="Markdown Nativo"
-            description="Write documents in Markdown with support for code, tables, images, and more."
-            color="violet"
-          />
-          <FeatureCard
-            icon={Zap}
-            title="Búsqueda Instantánea"
-            description="Find any document in seconds with our real-time search."
-            color="emerald"
-          />
-        </div>
-      </section>
+      {/* Quick links */}
+      {tree.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+            Quick Access
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {tree.slice(0, 6).map((node) => (
+              <Link
+                key={node.id}
+                href={node.type === "folder" ? `/docs/${node.slug}` : `/docs/${node.path}`}
+                className="group p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-violet-300 dark:hover:border-violet-700 hover:shadow-lg transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    node.type === "folder" 
+                      ? "bg-amber-100 dark:bg-amber-900/30" 
+                      : "bg-violet-100 dark:bg-violet-900/30"
+                  }`}>
+                    {node.type === "folder" ? (
+                      <FolderTree className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    ) : (
+                      <BookOpen className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                      {node.name}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {node.type === "folder" ? "Folder" : "Document"}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800">
@@ -101,38 +117,6 @@ export default async function HomePage() {
           <span>TalkRev © {new Date().getFullYear()}</span>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-  color,
-}: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  color: "amber" | "violet" | "emerald";
-}) {
-  const colorClasses = {
-    amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
-    violet: "bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400",
-    emerald: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400",
-  };
-
-  return (
-    <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-      <div className={`w-12 h-12 rounded-xl ${colorClasses[color]} flex items-center justify-center mb-4`}>
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-        {title}
-      </h3>
-      <p className="text-slate-600 dark:text-slate-400">
-        {description}
-      </p>
     </div>
   );
 }
