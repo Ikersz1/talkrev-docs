@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { BookOpen, FolderOpen, FileText, Plus, ArrowRight } from "lucide-react";
-import { getDocsTree } from "@/lib/docs";
+import { getDocsTreeFromDB } from "@/lib/supabase/docs-db";
 import { TreeNode } from "@/types";
 
-export default function DocsIndexPage() {
-  const tree = getDocsTree();
+export const dynamic = "force-dynamic";
+
+export default async function DocsIndexPage() {
+  const tree = await getDocsTreeFromDB();
 
   if (tree.length === 0) {
     return (

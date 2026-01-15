@@ -1,12 +1,14 @@
-import { getDocsTree } from "@/lib/docs";
+import { getDocsTreeFromDB } from "@/lib/supabase/docs-db";
 import { DocsLayoutClient } from "./DocsLayoutClient";
 
-export default function DocsLayout({
+export const dynamic = "force-dynamic";
+
+export default async function DocsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const tree = getDocsTree();
+  const tree = await getDocsTreeFromDB();
 
   return <DocsLayoutClient tree={tree}>{children}</DocsLayoutClient>;
 }

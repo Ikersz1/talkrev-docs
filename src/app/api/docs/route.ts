@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveDoc, getAllDocs, deleteDoc } from "@/lib/docs";
+import { saveDocToDB, getAllDocsFromDB, deleteDocFromDB } from "@/lib/supabase/docs-db";
 import { slugify } from "@/lib/utils";
 
 export async function GET() {
-  const docs = getAllDocs();
-  return NextResponse.json({ docs });
+  try {
+    const docs = await getAllDocsFromDB();
+    return NextResponse.json({ docs });
+  } catch (error) {
+    console.error("Error fetching docs:", error);
+    return NextResponse.json({ docs: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -22,16 +27,22 @@ export async function POST(request: NextRequest) {
     const slug = slugify(title);
     const docPath = folder ? `${folder}/${slug}` : slug;
 
-    const metadata = {
-      title,
-      date: new Date().toISOString(),
-    };
+    const result = await saveDocToDB(
+      docPath,
+      content || `# ${title}\n\nContenido aquí...`,
+      { title }
+    );
 
-    saveDoc(docPath, content || `# ${title}\n\nContenido aquí...`, metadata);
+    if (!result.success) {
+      return NextResponse.json(
+        { error: "Error al crear documento" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      path: docPath,
+      path: result.path,
     });
   } catch (error) {
     console.error("Error creating doc:", error);
@@ -54,7 +65,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const success = deleteDoc(path);
+    const success = await deleteDocFromDB(path);
 
     if (!success) {
       return NextResponse.json(

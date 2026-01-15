@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFolder } from "@/lib/docs";
-import { slugify } from "@/lib/utils";
+import { createFolderInDB, getFoldersFromDB } from "@/lib/supabase/docs-db";
+
+export async function GET() {
+  try {
+    const folders = await getFoldersFromDB();
+    return NextResponse.json({ folders });
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    return NextResponse.json({ folders: [] });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,19 +23,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const slug = slugify(name);
-    const success = createFolder(slug);
+    const result = await createFolderInDB(name);
 
-    if (!success) {
+    if (!result.success) {
       return NextResponse.json(
-        { error: "La carpeta ya existe" },
+        { error: "La carpeta ya existe o hubo un error" },
         { status: 400 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      slug,
+      slug: result.slug,
     });
   } catch (error) {
     console.error("Error creating folder:", error);

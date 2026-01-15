@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User, Edit3 } from "lucide-react";
-import { getDocByPath, getDocsTree } from "@/lib/docs";
+import { getDocByPathFromDB, getDocsTreeFromDB } from "@/lib/supabase/docs-db";
 import { MarkdownViewer } from "@/components/docs/MarkdownViewer";
 import { TableOfContents } from "@/components/docs/TableOfContents";
 import { formatDate } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 interface DocPageProps {
   params: Promise<{
@@ -15,7 +17,7 @@ interface DocPageProps {
 export default async function DocPage({ params }: DocPageProps) {
   const resolvedParams = await params;
   const docPath = resolvedParams.slug.join("/");
-  const doc = getDocByPath(docPath);
+  const doc = await getDocByPathFromDB(docPath);
 
   if (!doc) {
     notFound();
@@ -102,19 +104,6 @@ export default async function DocPage({ params }: DocPageProps) {
 }
 
 export async function generateStaticParams() {
-  const tree = getDocsTree();
-  const paths: { slug: string[] }[] = [];
-
-  function collectPaths(nodes: typeof tree, basePath: string[] = []) {
-    for (const node of nodes) {
-      if (node.type === "file") {
-        paths.push({ slug: [...basePath, node.slug] });
-      } else if (node.children) {
-        collectPaths(node.children, [...basePath, node.slug]);
-      }
-    }
-  }
-
-  collectPaths(tree);
-  return paths;
+  // Return empty array since we're using dynamic rendering
+  return [];
 }

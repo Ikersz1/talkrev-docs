@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { BookOpen, Search, FolderTree, Upload, Zap, Users } from "lucide-react";
-import { getDocsTree } from "@/lib/docs";
+import { getDocsTreeFromDB } from "@/lib/supabase/docs-db";
 
-export default function HomePage() {
-  const tree = getDocsTree();
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const tree = await getDocsTreeFromDB();
   const totalDocs = countDocs(tree);
 
   return (
