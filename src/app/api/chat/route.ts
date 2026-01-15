@@ -53,16 +53,41 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (folder) {
-          // It's a folder - get all docs in it
-          const { data: docs } = await supabase
-            .from("documents")
-            .select("title, content")
-            .eq("folder_id", folder.id)
-            .eq("is_published", true)
-            .not("content", "is", null);
-
-          if (docs) {
-            documentContent = docs
+          // It's a folder - get all docs in it and subfolders recursively
+          const allDocs: { title: string; content: string }[] = [];
+          
+          // Recursive function to get all documents in a folder and its subfolders
+          async function getFolderDocs(folderId: string) {
+            // Get documents directly in this folder
+            const { data: docs } = await supabase
+              .from("documents")
+              .select("title, content")
+              .eq("folder_id", folderId)
+              .eq("is_published", true)
+              .not("content", "is", null);
+            
+            if (docs) {
+              allDocs.push(...docs);
+            }
+            
+            // Get subfolders
+            const { data: subfolders } = await supabase
+              .from("folders")
+              .select("id")
+              .eq("parent_id", folderId);
+            
+            // Recursively get docs from subfolders
+            if (subfolders) {
+              for (const subfolder of subfolders) {
+                await getFolderDocs(subfolder.id);
+              }
+            }
+          }
+          
+          await getFolderDocs(folder.id);
+          
+          if (allDocs.length > 0) {
+            documentContent = allDocs
               .map((doc) => `## ${doc.title}\n${doc.content}`)
               .join("\n\n---\n\n");
           }
