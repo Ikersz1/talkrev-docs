@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFolderInDB, getFoldersFromDB } from "@/lib/supabase/docs-db";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-")
+    .trim();
+}
 
 export async function GET() {
   try {
-    const folders = await getFoldersFromDB();
-    return NextResponse.json({ folders });
+    const supabase = await createServerSupabaseClient();
+    
+    const { data: folders } = await supabase
+      .from("folders")
+      .select("*")
+      .order("order", { ascending: true });
+
+    return NextResponse.json({ folders: folders || [] });
   } catch (error) {
     console.error("Error fetching folders:", error);
     return NextResponse.json({ folders: [] });
@@ -14,7 +29,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name } = body;
+    const { name, parentId } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -23,18 +38,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await createFolderInDB(name);
+    const supabase = await createServerSupabaseClient();
+    const slug = slugify(name);
 
-    if (!result.success) {
+    // Check if folder already exists with same slug and parent
+    let query = supabase
+      .from("folders")
+      .select("id")
+      .eq("slug", slug);
+
+    if (parentId) {
+      query = query.eq("parent_id", parentId);
+    } else {
+      query = query.is("parent_id", null);
+    }
+
+    const { data: existing } = await query.single();
+
+    if (existing) {
       return NextResponse.json(
-        { error: "La carpeta ya existe o hubo un error" },
+        { error: "Ya existe una carpeta con ese nombre" },
         { status: 400 }
+      );
+    }
+
+    // Create folder
+    const { error } = await supabase.from("folders").insert({
+      name,
+      slug,
+      parent_id: parentId || null,
+    });
+
+    if (error) {
+      console.error("Error creating folder:", error);
+      return NextResponse.json(
+        { error: "Error al crear carpeta" },
+        { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      slug: result.slug,
+      slug,
     });
   } catch (error) {
     console.error("Error creating folder:", error);

@@ -13,16 +13,41 @@ interface DocsLayoutClientProps {
   children: React.ReactNode;
 }
 
+// Recursively extract all folders from tree
+function extractFolders(nodes: TreeNode[], parentPath = ""): { id: string; name: string; slug: string; path: string }[] {
+  const folders: { id: string; name: string; slug: string; path: string }[] = [];
+  
+  for (const node of nodes) {
+    if (node.type === "folder") {
+      const path = parentPath ? `${parentPath}/${node.slug}` : node.slug;
+      folders.push({
+        id: node.id,
+        name: parentPath ? `${parentPath} / ${node.name}` : node.name,
+        slug: node.slug,
+        path,
+      });
+      
+      // Recursively get child folders
+      if (node.children) {
+        folders.push(...extractFolders(node.children, path));
+      }
+    }
+  }
+  
+  return folders;
+}
+
 export function DocsLayoutClient({ tree, children }: DocsLayoutClientProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNewDocOpen, setIsNewDocOpen] = useState(false);
   const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-  // Get folder names for the new doc modal
-  const folders = tree
-    .filter((node) => node.type === "folder")
-    .map((node) => node.slug);
+  // Get all folders with full path info
+  const allFolders = extractFolders(tree);
+  
+  // Get folder slugs for doc/upload modals
+  const folderSlugs = allFolders.map((f) => f.path);
 
   // Global keyboard shortcut for search
   useEffect(() => {
@@ -53,16 +78,17 @@ export function DocsLayoutClient({ tree, children }: DocsLayoutClientProps) {
       <NewDocModal
         isOpen={isNewDocOpen}
         onClose={() => setIsNewDocOpen(false)}
-        folders={folders}
+        folders={folderSlugs}
       />
       <NewFolderModal
         isOpen={isNewFolderOpen}
         onClose={() => setIsNewFolderOpen(false)}
+        folders={allFolders}
       />
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        folders={folders}
+        folders={folderSlugs}
       />
     </div>
   );

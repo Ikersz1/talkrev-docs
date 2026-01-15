@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/Input";
 interface NewFolderModalProps {
   isOpen: boolean;
   onClose: () => void;
+  folders?: { id: string; name: string; slug: string }[];
 }
 
-export function NewFolderModal({ isOpen, onClose }: NewFolderModalProps) {
+export function NewFolderModal({ isOpen, onClose, folders = [] }: NewFolderModalProps) {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [parentId, setParentId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,7 +33,10 @@ export function NewFolderModal({ isOpen, onClose }: NewFolderModalProps) {
       const res = await fetch("/api/folders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim() }),
+        body: JSON.stringify({ 
+          name: name.trim(),
+          parentId: parentId || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -43,6 +48,7 @@ export function NewFolderModal({ isOpen, onClose }: NewFolderModalProps) {
       router.refresh();
       onClose();
       setName("");
+      setParentId("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
@@ -84,13 +90,30 @@ export function NewFolderModal({ isOpen, onClose }: NewFolderModalProps) {
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: guias, api, tutoriales"
+              placeholder="Ej: Tutoriales"
               autoFocus
             />
-            <p className="text-xs text-slate-500 mt-1.5">
-              Usa minúsculas y guiones. Ej: getting-started
-            </p>
           </div>
+
+          {folders.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Dentro de (opcional)
+              </label>
+              <select
+                value={parentId}
+                onChange={(e) => setParentId(e.target.value)}
+                className="w-full h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+              >
+                <option value="">Raíz</option>
+                {folders.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {error && (
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>

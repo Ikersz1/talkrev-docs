@@ -26,28 +26,67 @@ export async function getDocsTreeFromDB(): Promise<TreeNode[]> {
     return [];
   }
 
-  // Build tree structure
-  const tree: TreeNode[] = [];
+  // Build folder path map for nested folders
+  const folderPathMap = new Map<string, string>();
+  
+  function getFolderPath(folderId: string): string {
+    if (folderPathMap.has(folderId)) {
+      return folderPathMap.get(folderId)!;
+    }
+    
+    const folder = folders.find((f) => f.id === folderId);
+    if (!folder) return "";
+    
+    if (folder.parent_id) {
+      const parentPath = getFolderPath(folder.parent_id);
+      const path = parentPath ? `${parentPath}/${folder.slug}` : folder.slug;
+      folderPathMap.set(folderId, path);
+      return path;
+    }
+    
+    folderPathMap.set(folderId, folder.slug);
+    return folder.slug;
+  }
 
-  // Add folders first
-  for (const folder of folders) {
+  // Pre-calculate all folder paths
+  folders.forEach((f) => getFolderPath(f.id));
+
+  // Recursive function to build folder tree
+  function buildFolderNode(folder: typeof folders[0]): TreeNode {
+    const folderPath = getFolderPath(folder.id);
+    
+    // Get documents in this folder
     const folderDocs = documents.filter((doc) => doc.folder_id === folder.id);
     
-    tree.push({
-      id: folder.id,
-      name: folder.name,
-      slug: folder.slug,
-      type: "folder",
-      path: folder.slug,
-      children: folderDocs.map((doc) => ({
+    // Get child folders
+    const childFolders = folders.filter((f) => f.parent_id === folder.id);
+    
+    const children: TreeNode[] = [
+      // Child folders first
+      ...childFolders.map((childFolder) => buildFolderNode(childFolder)),
+      // Then documents
+      ...folderDocs.map((doc) => ({
         id: doc.id,
         name: doc.title,
         slug: doc.slug,
         type: "file" as const,
-        path: `${folder.slug}/${doc.slug}`,
+        path: `${folderPath}/${doc.slug}`,
       })),
-    });
+    ];
+
+    return {
+      id: folder.id,
+      name: folder.name,
+      slug: folder.slug,
+      type: "folder",
+      path: folderPath,
+      children,
+    };
   }
+
+  // Build tree starting with root folders (no parent)
+  const rootFolders = folders.filter((f) => !f.parent_id);
+  const tree: TreeNode[] = rootFolders.map((folder) => buildFolderNode(folder));
 
   // Add root-level documents (no folder)
   const rootDocs = documents.filter((doc) => !doc.folder_id);
