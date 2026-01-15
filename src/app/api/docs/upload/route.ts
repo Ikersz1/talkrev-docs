@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
+import pdf from "pdf-parse";
 
 // Sanitize filename for Supabase Storage
 function sanitizeFileName(name: string): string {
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
     const fileType = file.type || "application/octet-stream";
     const fileSize = file.size;
     const isMarkdown = originalFileName.endsWith(".md");
+    const isPdf = fileType === "application/pdf" || originalFileName.endsWith(".pdf");
 
     // Generate slug from title or filename
     const docTitle = title || originalFileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     const fileUrl = urlData.publicUrl;
 
-    // For markdown files, also store the content
+    // Extract content from files
     let content: string | null = null;
     if (isMarkdown) {
       content = await file.text();
@@ -94,6 +96,25 @@ export async function POST(request: NextRequest) {
         if (titleMatch) {
           // docTitle is already set, but we could update it here
         }
+      }
+    } else if (isPdf) {
+      // Extract text from PDF
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const pdfData = await pdf(buffer);
+        content = pdfData.text;
+        
+        // If no title provided, try to extract from first line or use filename
+        if (!title && pdfData.text) {
+          const firstLine = pdfData.text.split('\n').find((line: string) => line.trim().length > 0);
+          if (firstLine && firstLine.trim().length < 100) {
+            // Could use first line as title, but for now we'll use filename
+          }
+        }
+      } catch (error) {
+        console.error("Error extracting PDF text:", error);
+        // Continue without content - PDF will still be uploaded but won't be searchable in chat
       }
     }
 
