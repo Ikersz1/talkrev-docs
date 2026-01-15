@@ -27,16 +27,18 @@ export async function POST(request: NextRequest) {
     let documentContent = "";
 
     if (context === "all") {
-      // Fetch all documents
+      // Fetch all documents with content
       const { data: docs } = await supabase
         .from("documents")
         .select("title, content")
         .eq("is_published", true)
         .not("content", "is", null)
-        .limit(20);
+        .order("updated_at", { ascending: false });
 
-      if (docs) {
-        documentContent = docs
+      if (docs && docs.length > 0) {
+        // Limit to most recent 50 documents to avoid token limits
+        const recentDocs = docs.slice(0, 50);
+        documentContent = recentDocs
           .map((doc) => `## ${doc.title}\n${doc.content}`)
           .join("\n\n---\n\n");
       }

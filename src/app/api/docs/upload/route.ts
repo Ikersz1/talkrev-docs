@@ -100,7 +100,8 @@ export async function POST(request: NextRequest) {
       // Extract text from PDF
       try {
         // Dynamic import to handle ESM module
-        const pdfParse = (await import("pdf-parse")).default;
+        const pdfParseModule = await import("pdf-parse");
+        const pdfParse = pdfParseModule.default || pdfParseModule;
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const pdfData = await pdfParse(buffer);
