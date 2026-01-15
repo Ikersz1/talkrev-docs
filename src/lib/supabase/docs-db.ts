@@ -118,6 +118,9 @@ export async function getDocByPathFromDB(docPath: string): Promise<DocFile | nul
     createdAt: new Date(doc.created_at),
     updatedAt: new Date(doc.updated_at),
     author: doc.author_name || undefined,
+    fileUrl: doc.file_url || undefined,
+    fileType: doc.file_type || undefined,
+    fileSize: doc.file_size || undefined,
   };
 }
 

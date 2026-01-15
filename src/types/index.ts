@@ -7,6 +7,9 @@ export interface DocFile {
   createdAt: Date;
   updatedAt: Date;
   author?: string;
+  fileUrl?: string;
+  fileType?: string;
+  fileSize?: number;
 }
 
 export interface Folder {
@@ -42,4 +45,5 @@ export interface TreeNode {
   type: "folder" | "file";
   children?: TreeNode[];
   path: string;
+  fileType?: string;
 }

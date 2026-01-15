@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { X, Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { X, Upload, FileText, Loader2, CheckCircle, AlertCircle, File, Image, FileCode, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface UploadModalProps {
@@ -12,9 +12,38 @@ interface UploadModalProps {
 }
 
 interface UploadedFile {
+  file: File;
   name: string;
   status: "pending" | "uploading" | "success" | "error";
   error?: string;
+}
+
+const FILE_ICONS: Record<string, React.ElementType> = {
+  "text/markdown": FileText,
+  "text/plain": FileText,
+  "application/pdf": File,
+  "image/png": Image,
+  "image/jpeg": Image,
+  "image/gif": Image,
+  "image/webp": Image,
+  "text/html": FileCode,
+  "text/css": FileCode,
+  "text/javascript": FileCode,
+  "application/json": FileCode,
+  "text/csv": FileSpreadsheet,
+  "application/vnd.ms-excel": FileSpreadsheet,
+};
+
+function getFileIcon(type: string): React.ElementType {
+  if (type.startsWith("image/")) return Image;
+  if (type.startsWith("text/")) return FileText;
+  return FILE_ICONS[type] || File;
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
@@ -26,23 +55,15 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
   const [dragOver, setDragOver] = useState(false);
 
   const handleFileSelect = (selectedFiles: FileList | null) => {
-    if (!selectedFiles) return;
+    if (!selectedFiles || selectedFiles.length === 0) return;
 
-    const mdFiles = Array.from(selectedFiles).filter((f) =>
-      f.name.endsWith(".md")
-    );
+    const newFiles = Array.from(selectedFiles).map((f) => ({
+      file: f,
+      name: f.name,
+      status: "pending" as const,
+    }));
 
-    if (mdFiles.length === 0) {
-      alert("Por favor selecciona archivos .md");
-      return;
-    }
-
-    setFiles(
-      mdFiles.map((f) => ({
-        name: f.name,
-        status: "pending" as const,
-      }))
-    );
+    setFiles((prev) => [...prev, ...newFiles]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -51,19 +72,19 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
     handleFileSelect(e.dataTransfer.files);
   };
 
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
 
     setIsUploading(true);
-    const input = fileInputRef.current;
-    if (!input?.files) return;
 
-    const fileArray = Array.from(input.files).filter((f) =>
-      f.name.endsWith(".md")
-    );
-
-    for (let i = 0; i < fileArray.length; i++) {
-      const file = fileArray[i];
+    for (let i = 0; i < files.length; i++) {
+      const uploadFile = files[i];
+      
+      if (uploadFile.status !== "pending") continue;
 
       setFiles((prev) =>
         prev.map((f, idx) =>
@@ -72,23 +93,15 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
       );
 
       try {
-        const content = await file.text();
-        
-        // Extract title from first # heading or filename
-        const titleMatch = content.match(/^#\s+(.+)$/m);
-        const title = titleMatch
-          ? titleMatch[1]
-          : file.name.replace(".md", "").replace(/-/g, " ");
+        const formData = new FormData();
+        formData.append("file", uploadFile.file);
+        if (folder) {
+          formData.append("folder", folder);
+        }
 
         const res = await fetch("/api/docs/upload", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title,
-            content,
-            folder: folder || undefined,
-            filename: file.name,
-          }),
+          body: formData,
         });
 
         if (!res.ok) {
@@ -126,7 +139,8 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
     onClose();
   };
 
-  const allDone = files.length > 0 && files.every((f) => f.status !== "pending" && f.status !== "uploading");
+  const pendingFiles = files.filter((f) => f.status === "pending");
+  const allDone = files.length > 0 && pendingFiles.length === 0 && !isUploading;
   const hasSuccess = files.some((f) => f.status === "success");
 
   if (!isOpen) return null;
@@ -150,9 +164,14 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
           <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
             <Upload className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Subir Archivos Markdown
-          </h2>
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+              Subir Archivos
+            </h2>
+            <p className="text-sm text-slate-500">
+              .md, .pdf, imágenes, y más
+            </p>
+          </div>
         </div>
 
         {/* Folder selector */}
@@ -192,7 +211,6 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".md"
             multiple
             onChange={(e) => handleFileSelect(e.target.files)}
             className="hidden"
@@ -200,39 +218,57 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
 
           <Upload className="h-10 w-10 mx-auto mb-3 text-slate-400" />
           <p className="text-slate-600 dark:text-slate-400 mb-1">
-            Arrastra archivos .md aquí o haz click
+            Arrastra archivos aquí o haz click
           </p>
           <p className="text-sm text-slate-500">
-            Puedes subir múltiples archivos
+            Cualquier tipo de archivo
           </p>
         </div>
 
         {/* File list */}
         {files.length > 0 && (
           <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
-            {files.map((file, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800"
-              >
-                <FileText className="h-4 w-4 text-slate-400 shrink-0" />
-                <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate">
-                  {file.name}
-                </span>
-                {file.status === "uploading" && (
-                  <Loader2 className="h-4 w-4 text-violet-500 animate-spin" />
-                )}
-                {file.status === "success" && (
-                  <CheckCircle className="h-4 w-4 text-emerald-500" />
-                )}
-                {file.status === "error" && (
-                  <div className="flex items-center gap-1">
-                    <AlertCircle className="h-4 w-4 text-red-500" />
-                    <span className="text-xs text-red-500">{file.error}</span>
+            {files.map((file, index) => {
+              const Icon = getFileIcon(file.file.type);
+              return (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800"
+                >
+                  <Icon className="h-5 w-5 text-slate-400 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-700 dark:text-slate-300 truncate">
+                      {file.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {formatFileSize(file.file.size)}
+                    </p>
                   </div>
-                )}
-              </div>
-            ))}
+                  {file.status === "pending" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                      className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                    >
+                      <X className="h-4 w-4 text-slate-400" />
+                    </button>
+                  )}
+                  {file.status === "uploading" && (
+                    <Loader2 className="h-4 w-4 text-violet-500 animate-spin" />
+                  )}
+                  {file.status === "success" && (
+                    <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  )}
+                  {file.status === "error" && (
+                    <div className="flex items-center gap-1">
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -249,7 +285,7 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
           {!allDone && (
             <Button
               onClick={handleUpload}
-              disabled={files.length === 0 || isUploading}
+              disabled={pendingFiles.length === 0 || isUploading}
               className="flex-1 gap-2"
             >
               {isUploading ? (
@@ -260,7 +296,7 @@ export function UploadModal({ isOpen, onClose, folders }: UploadModalProps) {
               ) : (
                 <>
                   <Upload className="h-4 w-4" />
-                  Subir {files.length > 0 ? `(${files.length})` : ""}
+                  Subir {pendingFiles.length > 0 ? `(${pendingFiles.length})` : ""}
                 </>
               )}
             </Button>

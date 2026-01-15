@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User, Edit3 } from "lucide-react";
-import { getDocByPathFromDB, getDocsTreeFromDB } from "@/lib/supabase/docs-db";
+import { ArrowLeft, Calendar, User, Edit3, Download } from "lucide-react";
+import { getDocByPathFromDB } from "@/lib/supabase/docs-db";
 import { MarkdownViewer } from "@/components/docs/MarkdownViewer";
 import { TableOfContents } from "@/components/docs/TableOfContents";
+import { FileViewer } from "@/components/docs/FileViewer";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -23,8 +24,9 @@ export default async function DocPage({ params }: DocPageProps) {
     notFound();
   }
 
-  // Get breadcrumb parts
   const pathParts = docPath.split("/");
+  const isMarkdown = !doc.fileType || doc.fileType === "text/markdown" || doc.fileType.startsWith("text/");
+  const hasContent = doc.content && doc.content.trim().length > 0;
 
   return (
     <div className="flex">
@@ -66,9 +68,29 @@ export default async function DocPage({ params }: DocPageProps) {
           Volver a la documentación
         </Link>
 
-        {/* Article */}
+        {/* Title for non-markdown files */}
+        {!isMarkdown && (
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
+            {doc.title}
+          </h1>
+        )}
+
+        {/* Content */}
         <article>
-          <MarkdownViewer content={doc.content} />
+          {isMarkdown && hasContent ? (
+            <MarkdownViewer content={doc.content} />
+          ) : doc.fileUrl ? (
+            <FileViewer
+              fileUrl={doc.fileUrl}
+              fileType={doc.fileType || "application/octet-stream"}
+              fileSize={doc.fileSize}
+              title={doc.title}
+            />
+          ) : (
+            <div className="py-12 text-center text-slate-500">
+              <p>Este documento no tiene contenido</p>
+            </div>
+          )}
         </article>
 
         {/* Metadata */}
@@ -84,26 +106,39 @@ export default async function DocPage({ params }: DocPageProps) {
               <Calendar className="h-4 w-4" />
               <span>Actualizado {formatDate(doc.updatedAt)}</span>
             </div>
-            <Link
-              href={`/docs/${docPath}/edit`}
-              className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline ml-auto"
-            >
-              <Edit3 className="h-4 w-4" />
-              Editar página
-            </Link>
+            {doc.fileUrl && (
+              <a
+                href={doc.fileUrl}
+                download
+                className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline"
+              >
+                <Download className="h-4 w-4" />
+                Descargar archivo
+              </a>
+            )}
+            {isMarkdown && hasContent && (
+              <Link
+                href={`/docs/${docPath}/edit`}
+                className="flex items-center gap-2 text-violet-600 dark:text-violet-400 hover:underline ml-auto"
+              >
+                <Edit3 className="h-4 w-4" />
+                Editar página
+              </Link>
+            )}
           </div>
         </footer>
       </div>
 
-      {/* Table of contents */}
-      <aside className="hidden xl:block w-64 shrink-0 sticky top-0 h-screen overflow-y-auto p-8">
-        <TableOfContents content={doc.content} />
-      </aside>
+      {/* Table of contents - only for markdown */}
+      {isMarkdown && hasContent && (
+        <aside className="hidden xl:block w-64 shrink-0 sticky top-0 h-screen overflow-y-auto p-8">
+          <TableOfContents content={doc.content} />
+        </aside>
+      )}
     </div>
   );
 }
 
 export async function generateStaticParams() {
-  // Return empty array since we're using dynamic rendering
   return [];
 }

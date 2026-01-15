@@ -11,6 +11,9 @@ export interface Database {
           author_name: string | null;
           is_published: boolean;
           views: number;
+          file_url: string | null;
+          file_type: string | null;
+          file_size: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -23,6 +26,9 @@ export interface Database {
           author_name?: string | null;
           is_published?: boolean;
           views?: number;
+          file_url?: string | null;
+          file_type?: string | null;
+          file_size?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -35,6 +41,9 @@ export interface Database {
           author_name?: string | null;
           is_published?: boolean;
           views?: number;
+          file_url?: string | null;
+          file_type?: string | null;
+          file_size?: number | null;
           created_at?: string;
           updated_at?: string;
         };

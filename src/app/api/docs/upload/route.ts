@@ -4,20 +4,27 @@ import { slugify } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { title, content, folder, filename } = body;
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const folder = formData.get("folder") as string | null;
+    const title = formData.get("title") as string | null;
 
-    if (!title || !content) {
+    if (!file) {
       return NextResponse.json(
-        { error: "Título y contenido son requeridos" },
+        { error: "Archivo requerido" },
         { status: 400 }
       );
     }
 
     const supabase = await createServerSupabaseClient();
+    const fileName = file.name;
+    const fileType = file.type || "application/octet-stream";
+    const fileSize = file.size;
+    const isMarkdown = fileName.endsWith(".md");
 
     // Generate slug from title or filename
-    const slug = slugify(title) || slugify(filename?.replace(".md", "") || "documento");
+    const docTitle = title || fileName.replace(/\.[^/.]+$/, "").replace(/-/g, " ");
+    const slug = slugify(docTitle);
 
     // Get folder ID if folder is specified
     let folderId: string | null = null;
@@ -31,10 +38,51 @@ export async function POST(request: NextRequest) {
       folderId = folderData?.id || null;
     }
 
+    // Upload file to Supabase Storage
+    const storagePath = folder 
+      ? `${folder}/${Date.now()}-${fileName}`
+      : `${Date.now()}-${fileName}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(storagePath, file, {
+        contentType: fileType,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error("Storage upload error:", uploadError);
+      return NextResponse.json(
+        { error: "Error al subir archivo" },
+        { status: 500 }
+      );
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from("documents")
+      .getPublicUrl(storagePath);
+
+    const fileUrl = urlData.publicUrl;
+
+    // For markdown files, also store the content
+    let content: string | null = null;
+    if (isMarkdown) {
+      content = await file.text();
+      
+      // Extract title from first # heading if not provided
+      if (!title) {
+        const titleMatch = content.match(/^#\s+(.+)$/m);
+        if (titleMatch) {
+          // docTitle is already set, but we could update it here
+        }
+      }
+    }
+
     // Check if document already exists
     let query = supabase
       .from("documents")
-      .select("id, slug")
+      .select("id")
       .eq("slug", slug);
 
     if (folderId) {
@@ -50,8 +98,11 @@ export async function POST(request: NextRequest) {
       const { error } = await supabase
         .from("documents")
         .update({
-          title,
-          content,
+          title: docTitle,
+          content: content,
+          file_url: fileUrl,
+          file_type: fileType,
+          file_size: fileSize,
           updated_at: new Date().toISOString(),
         })
         .eq("id", existingDoc.id);
@@ -67,22 +118,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         path: folder ? `${folder}/${slug}` : slug,
+        fileUrl,
         updated: true,
       });
     }
 
     // Create new document
     const { error } = await supabase.from("documents").insert({
-      title,
+      title: docTitle,
       slug,
-      content,
+      content: content,
       folder_id: folderId,
+      file_url: fileUrl,
+      file_type: fileType,
+      file_size: fileSize,
     });
 
     if (error) {
       console.error("Error creating document:", error);
       
-      // Check if it's a unique constraint error
       if (error.code === "23505") {
         return NextResponse.json(
           { error: "Ya existe un documento con ese nombre" },
@@ -99,6 +153,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       path: folder ? `${folder}/${slug}` : slug,
+      fileUrl,
       created: true,
     });
   } catch (error) {
