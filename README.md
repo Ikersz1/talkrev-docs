@@ -41,6 +41,50 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENROUTER_API_KEY=your_openrouter_api_key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+## 🚀 Deployment (Vercel)
+
+### Prerequisites
+
+1. A [Vercel account](https://vercel.com)
+2. Your Supabase project URL and anon key
+3. Your OpenRouter API key
+
+### Deploy Steps
+
+1. **Push your code to GitHub** (already done ✅)
+
+2. **Import project to Vercel:**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New" → "Project"
+   - Import the `talkrev-docs` repository
+
+3. **Configure Environment Variables:**
+   In the Vercel project settings, add these environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
+   - `OPENROUTER_API_KEY` - Your OpenRouter API key
+   - `NEXT_PUBLIC_APP_URL` - Your Vercel deployment URL (e.g., `https://talkrev-docs.vercel.app`)
+
+4. **Deploy:**
+   - Vercel will automatically detect Next.js
+   - Click "Deploy"
+   - Your app will be live in minutes!
+
+### Post-Deployment
+
+After deployment, update `NEXT_PUBLIC_APP_URL` in Vercel with your actual deployment URL for the OpenRouter referer header.
+
 ## 📖 Usage
 
 ### Creating Documents
