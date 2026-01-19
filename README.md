@@ -1,129 +1,126 @@
 # TalkRev Docs
 
-Plataforma de documentación interna para el equipo TalkRev.
+Internal documentation platform for the TalkRev team.
 
-## ✨ Características
+## ✨ Features
 
-- 📁 **Sistema de carpetas**: Organiza documentos en carpetas
-- 📝 **Markdown nativo**: Escribe en Markdown con soporte completo
-- 🔍 **Búsqueda instantánea**: Usa `⌘K` para buscar rápidamente
-- 🎨 **Syntax highlighting**: Resaltado de código para múltiples lenguajes
-- 📱 **Responsive**: Funciona en móvil y desktop
-- 🌙 **Dark mode**: Soporte para tema oscuro
+- 📁 **Folder System**: Organize documents in folders and subfolders
+- 📝 **Markdown Support**: Write in Markdown with full support
+- 📄 **Multi-file Support**: Upload and view PDFs, images, videos, and more
+- 🤖 **AI Chatbot**: Ask questions about your documentation using OpenRouter
+- 🔍 **Instant Search**: Use `⌘K` to search quickly
+- 🎨 **Syntax Highlighting**: Code highlighting for multiple languages
+- 📱 **Responsive**: Works on mobile and desktop
+- 🌙 **Dark Mode**: Dark theme support
 
-## 🚀 Inicio rápido
+## 🚀 Quick Start
 
-### Requisitos
+### Requirements
 
 - Node.js 18+
-- npm o pnpm
+- npm or pnpm
+- Supabase account (for database and storage)
 
-### Instalación
+### Installation
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone <repo-url>
 cd talkrev-docs
 
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en desarrollo
+# Set up environment variables
+cp .env.example .env.local
+# Add your Supabase URL and anon key
+
+# Run in development
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 📖 Uso
+## 📖 Usage
 
-### Crear documentos
+### Creating Documents
 
-1. Haz clic en "Nuevo Doc" en la barra lateral
-2. Escribe un título y selecciona una carpeta (opcional)
-3. El documento se creará con formato Markdown
+1. Click "New Doc" in the sidebar
+2. Enter a title and select a folder (optional)
+3. The document will be created with Markdown format
 
-### Estructura de archivos
+### Uploading Files
 
-Los documentos se almacenan en la carpeta `/docs` como archivos `.md`:
+1. Click "Upload Files" in the sidebar
+2. Select any file type (PDF, images, videos, etc.)
+3. PDFs will have their text automatically extracted for the AI chatbot
 
-```
-docs/
-├── getting-started/
-│   ├── introduction.md
-│   └── quick-start.md
-├── api/
-│   └── overview.md
-└── guides/
-    └── style-guide.md
-```
+### AI Chatbot
 
-### Formato Markdown
+1. Click the chat icon in the bottom right
+2. Select context: "All documentation", a specific folder, or a specific document
+3. Ask questions about your documentation
+4. The chatbot uses OpenRouter with Google Gemini 3 Flash Preview
 
-Los documentos soportan:
+### Markdown Format
 
-- Títulos (# H1, ## H2, etc.)
-- **Negrita** e *itálica*
-- Listas ordenadas y desordenadas
-- Bloques de código con syntax highlighting
-- Tablas
-- Citas
-- Imágenes
+Documents support:
+
+- Headers (# H1, ## H2, etc.)
+- **Bold** and *italic* text
+- Ordered and unordered lists
+- Code blocks with syntax highlighting
+- Tables
+- Blockquotes
+- Images
 - Links
 
-### Frontmatter
+## 🛠️ Development
 
-Puedes añadir metadatos al inicio de cada documento:
-
-```markdown
----
-title: Mi Documento
-author: Tu Nombre
-date: 2026-01-15
----
-
-# Contenido aquí...
-```
-
-## 🛠️ Desarrollo
-
-### Scripts disponibles
+### Available Scripts
 
 ```bash
-npm run dev      # Desarrollo con hot reload
-npm run build    # Build de producción
-npm run start    # Ejecutar build de producción
+npm run dev      # Development with hot reload
+npm run build    # Production build
+npm run start    # Run production build
 npm run lint     # Linting
 ```
 
-### Tecnologías
+### Technologies
 
-- **Next.js 16** - Framework React
-- **TypeScript** - Tipado estático
-- **Tailwind CSS 4** - Estilos
-- **React Markdown** - Renderizado de Markdown
-- **Lucide Icons** - Iconos
+- **Next.js 16** - React Framework
+- **TypeScript** - Static typing
+- **Tailwind CSS 4** - Styling
+- **Supabase** - Database and Storage
+- **OpenRouter** - LLM API
+- **React Markdown** - Markdown rendering
+- **pdf-parse** - PDF text extraction
+- **Lucide Icons** - Icons
 
-## 📦 Estructura del proyecto
+## 📦 Project Structure
 
 ```
 src/
-├── app/                 # Páginas y rutas
+├── app/                 # Pages and routes
 │   ├── api/            # API routes
-│   └── docs/           # Páginas de documentación
-├── components/         # Componentes React
-│   ├── docs/          # Componentes de documentación
-│   └── ui/            # Componentes UI reutilizables
-├── lib/               # Utilidades y funciones
-└── types/             # Tipos TypeScript
+│   │   ├── chat/       # AI chatbot endpoint
+│   │   ├── docs/       # Document management
+│   │   └── search/     # Search endpoint
+│   └── docs/           # Documentation pages
+├── components/         # React components
+│   ├── docs/          # Documentation components
+│   └── ui/            # Reusable UI components
+├── lib/               # Utilities and functions
+│   └── supabase/      # Supabase client and queries
+└── types/             # TypeScript types
 ```
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-1. Crea un documento en `/docs`
-2. Usa el formato Markdown estándar
-3. Añade frontmatter con título y autor
-4. Haz commit y push
+1. Create a document or make changes
+2. Use standard Markdown format
+3. Commit and push your changes
 
-## 📄 Licencia
+## 📄 License
 
-Uso interno - TalkRev © 2026
+Internal use - TalkRev © 2026
