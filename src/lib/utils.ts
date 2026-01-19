@@ -37,3 +37,14 @@ export function extractHeadings(content: string): { level: number; text: string;
 
   return headings;
 }
+
+/**
+ * Helper function to import pdf-parse with proper type handling
+ * Works in both development and production environments
+ */
+export async function importPdfParse() {
+  // @ts-expect-error - pdf-parse has inconsistent export types between ESM and CommonJS
+  const pdfParseModule = await import("pdf-parse");
+  // Handle both default export and named export
+  return (pdfParseModule as any).default || pdfParseModule;
+}

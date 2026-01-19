@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { slugify } from "@/lib/utils";
+import { slugify, importPdfParse } from "@/lib/utils";
 
 // Sanitize filename for Supabase Storage
 function sanitizeFileName(name: string): string {
@@ -99,9 +99,7 @@ export async function POST(request: NextRequest) {
     } else if (isPdf) {
       // Extract text from PDF
       try {
-        // Dynamic import to handle ESM module
-        const pdfParseModule: any = await import("pdf-parse");
-        const pdfParse = pdfParseModule.default || pdfParseModule;
+        const pdfParse = await importPdfParse();
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const pdfData = await pdfParse(buffer);

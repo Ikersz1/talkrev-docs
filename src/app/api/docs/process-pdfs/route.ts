@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { importPdfParse } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,9 +48,7 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(arrayBuffer);
 
         // Extract text
-        // Use dynamic import with proper type handling
-        const pdfParseModule: any = await import("pdf-parse");
-        const pdfParse = pdfParseModule.default || pdfParseModule;
+        const pdfParse = await importPdfParse();
         const pdfData = await pdfParse(buffer);
 
         // Update document with extracted text
