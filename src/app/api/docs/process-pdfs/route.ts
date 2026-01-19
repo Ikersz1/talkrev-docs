@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(arrayBuffer);
 
         // Extract text
-        const pdfParseModule = await import("pdf-parse");
+        // Use dynamic import with proper type handling
+        const pdfParseModule: any = await import("pdf-parse");
         const pdfParse = pdfParseModule.default || pdfParseModule;
         const pdfData = await pdfParse(buffer);
 
